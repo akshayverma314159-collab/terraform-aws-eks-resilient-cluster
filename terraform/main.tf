@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = ">= 6.59.0"
     }
   }
 }
@@ -10,7 +10,6 @@ terraform {
 provider "aws" {
   region = var.aws_region
 }
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"
@@ -26,11 +25,12 @@ module "vpc" {
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   version         = "~> 21.0"
-  cluster_name    = "sre-production-cluster"
-  cluster_version = "1.36"
+  name    = "sre-production-cluster"
+  kubernetes_version = "1.36"
   enable_cluster_creator_admin_permissions = true
   
   vpc_id          = module.vpc.vpc_id
+  endpoint_public_access = true
   subnet_ids      = module.vpc.private_subnets
 
   eks_managed_node_groups = {
